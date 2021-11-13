@@ -17,15 +17,20 @@ app.post('/events', async (req, res) => {
   if (type === 'CommentCreated') {
     const status = data.content.includes('orange') ? 'rejected' : 'approved';
 
-    await axios.post('http://event-bus-srv:4005/events', {
-      type: 'CommentModerated',
-      data: {
-        status,
-        id: data.id,
-        postId: data.postId,
-        content: data.content,
-      },
-    });
+    try {
+      await axios.post('http://event-bus-srv:4005/events', {
+        type: 'CommentModerated',
+        data: {
+          status,
+          id: data.id,
+          postId: data.postId,
+          content: data.content,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      res.statys(500).json({ status: 'FAIL' });
+    }
   }
 
   res.sendStatus(200);
